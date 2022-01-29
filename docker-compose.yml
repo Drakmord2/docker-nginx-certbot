@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+    production-api:
+        image: api-image
+        ports:
+            - "5000:5000"
+        networks:
+            - api-network
+        restart: unless-stopped
+
+    nginx-certbot:
+        image: nginx-certbot
+        build: .
+        environment:
+            - CERTBOT_EMAIL=devops@yourdomain.com
+            - STAGING=0
+            - FORCE_RENEWAL=0
+        ports:
+            - 80:80
+            - 443:443
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf         # Nginx configs
+            - ./nginx/nginxconfig.io:/etc/nginx/nginxconfig.io # Server configs
+            - ./nginx/sites-enabled:/etc/nginx/sites-enabled   # Server configs
+            - ./dhparam.pem:/etc/nginx/dhparam.pem             # DHParams
+            - nginx_secrets:/etc/letsencrypt                   # Persist certificates
+        read_only: true
+        tmpfs:
+            - /etc/nginx/conf.d
+            - /var/cache/nginx
+            - /var/run
+            - /tmp
+            - /var/log/nginx
+            - /var/log/letsencrypt
+            - /var/lib/letsencrypt
+            - /var/www/letsencrypt
+        cap_drop:
+            - ALL
+        cap_add:
+            - NET_BIND_SERVICE
+            - CHOWN
+            - SETUID
+            - SETGID
+        restart: unless-stopped
+        networks:
+            - api-network
+        depends_on:
+            - production-api
+
+volumes:
+    nginx_secrets:
+
+networks:
+    api-network:
+        driver: bridge
