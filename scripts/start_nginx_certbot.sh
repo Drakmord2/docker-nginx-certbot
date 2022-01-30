@@ -24,6 +24,9 @@ trap "clean_exit" EXIT
 # If the environment variable `DEBUG=1` is set, then this message is printed.
 debug "Debug messages are enabled"
 
+# Run 'create_configs' so the .conf file of the project is created.
+create_configs
+
 # Run 'auto_enable_configs' so that Nginx is in a runnable state
 # This will temporarily disable any misconfigured servers.
 auto_enable_configs

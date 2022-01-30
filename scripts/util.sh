@@ -251,3 +251,26 @@ auto_enable_configs() {
         fi
     done
 }
+
+# Helper function that creates a .conf file on /etc/nginx/sites-enabled using the 
+# environment variables set on the docker-compose.yml file.
+create_configs() {
+    if [ -z "${DOMAIN}" ]; then
+        error "The DOMAIN environment variable should be set on docker-compose.yml"
+        return 1
+    fi
+
+    if [ -z "${API_DOCKER_SERVICE}" ]; then
+        API_DOCKER_SERVICE=production-api
+    fi
+
+    if [ -z "${API_DOCKER_PORT}" ]; then
+        API_DOCKER_PORT=5000
+    fi
+
+    FILE_PATH="/etc/nginx/sites-enabled/${DOMAIN}.conf"
+
+    EXP="s:{{DOMAIN}}:${DOMAIN}:g; s:{{API_DOCKER_SERVICE}}:${API_DOCKER_SERVICE}:g; s:{{API_DOCKER_PORT}}:${API_DOCKER_PORT}:g"
+
+    sed -e $EXP /etc/nginx/sites-enabled/server.conf.template > $FILE_PATH
+}

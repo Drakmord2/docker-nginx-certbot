@@ -13,6 +13,9 @@ services:
         image: nginx-certbot
         build: .
         environment:
+            - DOMAIN=api.yourdomain.com
+            - API_DOCKER_SERVICE=production_api
+            - API_DOCKER_PORT=5000
             - CERTBOT_EMAIL=devops@yourdomain.com
             - STAGING=0
             - FORCE_RENEWAL=0
