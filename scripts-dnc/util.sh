@@ -265,7 +265,7 @@ create_configs() {
     fi
 
     if [ -z "${API_DOCKER_PORT}" ]; then
-        API_DOCKER_PORT=5000
+        API_DOCKER_PORT=8080
     fi
 
     FILE_PATH="/etc/nginx/sites-enabled/${DOMAIN}.conf"

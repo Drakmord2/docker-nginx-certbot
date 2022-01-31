@@ -2,7 +2,7 @@ version: '3'
 
 services:
     production-api:
-        image: api-image
+        image: your-api-image
         ports:
             - "5000:5000"
         networks:
@@ -11,23 +11,21 @@ services:
 
     nginx-certbot:
         image: nginx-certbot
-        build: .
+        build: 
+            context: .
+            dockerfile: Dockerfile-dnc
         environment:
             - DOMAIN=api.yourdomain.com
-            - API_DOCKER_SERVICE=production_api
-            - API_DOCKER_PORT=5000
             - CERTBOT_EMAIL=devops@yourdomain.com
-            - STAGING=0
-            - FORCE_RENEWAL=0
         ports:
             - 80:80
             - 443:443
         volumes:
-            - ./nginx/nginx.conf:/etc/nginx/nginx.conf         # Nginx general configs
-            - ./nginx/nginxconfig.io:/etc/nginx/nginxconfig.io # Nginx proxy, security and other configs
-            - ./nginx/sites-enabled:/etc/nginx/sites-enabled   # Server configs
-            - ./dhparam.pem:/etc/nginx/dhparam.pem             # DHParams
-            - nginx_secrets:/etc/letsencrypt                   # Persist certificates
+            - ./nginx-dnc/nginx.conf:/etc/nginx/nginx.conf         # Nginx general configs
+            - ./nginx-dnc/nginxconfig.io:/etc/nginx/nginxconfig.io # Nginx proxy, security and other configs
+            - ./nginx-dnc/sites-enabled:/etc/nginx/sites-enabled   # Server configs
+            - ./nginx-dnc/dhparam.pem:/etc/nginx/dhparam.pem       # DHParams
+            - nginx_secrets:/etc/letsencrypt                       # Persist certificates on host machine
         read_only: true
         tmpfs:
             - /etc/nginx/conf.d
